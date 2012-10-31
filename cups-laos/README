@@ -1,0 +1,87 @@
+Building CUPS-LAOS
+---------------------
+On Debian/Ubuntu Linux, run the following commands in the src directory:
+
+	make
+	make install
+
+This will install the binary in the CUPS backend directory.
+
+For other platforms: compile the binary:
+
+	gcc -O9 -s -o cups-laos cups-laos.c -lcurl -I.
+
+Then install the binary in the proper backend directory of CUPS 
+(usually /usr/lib/cups/backend).
+Make a directory for the PPD file (/usr/share/ppd/cups-laos)
+Copy CUPS-LAOS.ppd to /usr/share/ppd/cups-laos/CUPS-LAOS.ppd
+
+After you installed this, you can install pstoedit from our source (it includes
+drivers that are not in the defautl pstoedit!) You need a working pstoedit 
+installation for this printerdriver to actually do something!!!
+
+Installing CUPS-LAOS driver in CUPS
+--------------------------------------
+Use the default CUPS panel to instal a new printer. In Ubuntu/Debian:
+System->Administration->Printing
+Select "Add printer"
+
+In the devices column, a device called "Generic CUPS-LAOS Printer" should 
+appear, with device URI: cups-laos:/
+Select "Forward", CUPS will now search for drivers.
+
+Fill in your prefered Printer Name, Description and Location and click Apply
+to accept the printer. Do NOT print a test page, you should first configure
+the printer!
+
+Select the new printer and go to "properties->Printer options". Here you can
+change the settings for the laser cutter.
+
+
+===================================================
+Notes:
+
+About making a PPD file, see:
+* Wikipedia
+  http://en.wikipedia.org/wiki/PostScript_Printer_Description
+* Adobe Tech Note 5003: PostScript Printer Description (PPD) File Format 
+  Specification
+  http://partners.adobe.com/public/developer/en/ps/5003.PPD_Spec_v4.3.pdf
+* Adobe Tech Note 5645: Update to PPD Specification Version 4.3
+  http://partners.adobe.com/public/developer/en/ps/5645.PPD_Update.pdf
+* Debian
+  http://wiki.debian.org/SystemPrinting
+  http://wiki.debian.org/PpdFileStructureSpecification
+
+cups-laos.c calls "gscall" on line 725. 
+this should be changed into either
+- calling pstoedit commandline
+- calling a routine based on the epilog-cups code, doing the postscript
+  handling directly in this backend
+
+cups-epilog changes input into .eps first. Why?
+
+it uses this commandline for splitting into vectors and bitmaps:
+gs -q -dBATCH -dNOPAUSE -sDEVICE=bmpmono -sOutputFile=bitmap.bmp block.eps > vectors.ps
+
+test on commandline!
+
+testing cups-laos:
+./cups-laos 1 jaap testfile 1 opts ../examples/block.ps
+bmp_mode a string which is one of bmp16m, bmpgray, or bmpmono
+
+pstoedit -rgb -f gcode -psarg "-r300x300" block.ps block.gcode
+
+-usebbfrominput
+	bounding box from input (in PPD?)
+-centered (PPD?)
+-rgb (lijkt me prima als standaard!)
+-q (als debug=off) quiet
+-rotate (vanuit PPD meegegeven?)
+-pagesize (indien meegegeven vanuit PPD)
+-psarg (geef postscript options mee, zoals b.v.:
+	-psarg "-r300x300" set DPI op 300x300
+-f gcode
+-mergelines
+
+
