@@ -116,6 +116,7 @@ int Config::readArgs(int argc, char *argv[], char *envp[]) {
 	    strncat (option_name, option, x);
 	    xp++;
 	    //_assign_value(option_name, option);
+        /*
 	    if (!strcmp("LaserCuttingPower", option_name)) {
 	      strcpy(LaserCuttingPower, option);
 	      sprintf(logstring, "option read (%s)", option_name);
@@ -126,6 +127,9 @@ int Config::readArgs(int argc, char *argv[], char *envp[]) {
 	      sprintf(logstring, "option read (%s)", option_name);
 	      logf->Log(CPDEBUG, logstring);
 	    }
+        */
+        sprintf(logstring, "option %s read (%s)", option_name, option);
+        logf->Log(CPDEBUG, logstring);
 	    option = strtok(NULL, delim);
 	  }
 	sprintf(logstring, "readArgs done");

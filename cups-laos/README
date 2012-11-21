@@ -85,3 +85,52 @@ pstoedit -rgb -f gcode -psarg "-r300x300" block.ps block.gcode
 -mergelines
 
 
+Internal overview of the cups driver
+=====================================
+global variables:
+    * psfile, gcodefile (char[256]) ==> filenames
+    * logf:
+    * cfg  = config
+    * logstring
+
+includes:
+    config.h
+    logevent.h
+
+functions:
+* readfile: copies cups tmpfile of stream naar postscript file
+* gen_code(): uses pstoedit with psfile to create gcodefile
+* upload_code(): calls tftp to upload the file
+* delete_tmpfiles(): deletes psfile and gcodefile
+* namefiles(): make names for files
+
+logevent functions:
+    logevent() => create class
+    setloglevel() => set log level (not used)
+    log => send a log message
+    isdebug => return if debugging is set or not
+
+config functions:
+    readURI: converts URI into ipAddress,port
+    readArgs: reads cmdline arguments like options and title
+
+config variables:
+    jobname = laos => set by cfg->readArgs
+    ipAddress = 127.0.0.1 => set by cfg->readURI, used by main.upload_gcode
+    port = 69 => set by cfg->readURI, used by main.upload_gcode
+    title => set by cfg->readARGS, used by main.upload_gcode
+    pstoedit => set in config.cpp
+    tmpdir => /var/spool/cups/tmp, set in config.cpp, used for tmpfile names
+        in config.cpp
+    options => set in cfg->readARGS, send to log, but not used in main()
+    filename => defaults to $tmpdir$jobname-$pid
+
+TODO LIST:
+
+* files created in pstoedit contain comment lines of the format:
+    ; comment
+  double-check if these are always properly handled in the firmware
+
+* would it be more convinient to use internal code for TFTP handling?
+    or would that complicate things even more on different platforms?
+

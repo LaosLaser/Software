@@ -34,10 +34,6 @@ public:
 	char ipAddress[15];
 	unsigned int port;
 	char myURI[256];
-	char LaserCuttingPower[40];
-	char LaserCuttingSpeed[40];
-	char LaserMarkingPower[40];
-	char LaserMarkingSpeed[40];
 
 private:
 

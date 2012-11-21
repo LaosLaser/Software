@@ -46,12 +46,12 @@
 #include "Config.h"
 #include "LogEvent.h"
 
-#define CPVERSION       "0.0.2"
+#define CPVERSION       "0.0.3"
 
 char psfile[256], gcodefile[256];
 LogEvent* logf;
 Config* cfg;
-char logstring[256];
+char logstring[4352];
 
 void readfile(int argc, char *argv[]) {
 	// actually read the postscript file
@@ -83,8 +83,6 @@ void readfile(int argc, char *argv[]) {
 void gen_gcode() {
 	// generate gcode with pstoedit
 	char pscall[4096];
-	sprintf(psfile, "%s.ps", cfg->filename);
-	// sprintf(pscall, "%s -f \"laos:-configname cutting\" %s %s", cfg->pstoedit, psfile, cutfile);
 	sprintf(pscall, "%s %s %s", cfg->pstoedit, psfile, gcodefile);
 	sprintf(logstring, "pstoedit command built (%s)", pscall);
 	logf->Log(CPDEBUG, logstring);
@@ -112,8 +110,6 @@ void namefiles() {
 	sprintf(gcodefile, "%s.lgc", cfg->filename);
 }
 
-
-
 int main(int argc, char *argv[], char *envp[]) {
   logf = new LogEvent();
   cfg = new Config();
@@ -123,7 +119,7 @@ int main(int argc, char *argv[], char *envp[]) {
     readfile(argc, argv);
     gen_gcode();
     upload_gcode();
-    //delete_tmpfiles();
+    delete_tmpfiles();
   }
   return 0;
 }
