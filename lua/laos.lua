@@ -29,7 +29,7 @@ module(..., package.seeall)
 
 xscale = 1000;
 yscale = 1000;
-
+zscale = 1000;
 
 -- set speed 0..100%
 function speed(s)
@@ -42,8 +42,13 @@ function power(p)
 end;
 
 -- move [mm]
-function move(x,y)
-  print("0 " .. math.floor(xscale*x) .. " " .. math.floor(yscale*y) .. " ");
+function move(x,y,z)
+  if z ~= nil then
+    print("2 " .. math.floor(zscale*z) .. " ");
+  end
+  if x ~= nil and y ~= nil then
+    print("0 " .. math.floor(xscale*x) .. " " .. math.floor(yscale*y) .. " ");
+  end;
 end;
 
 -- laser [mm]
@@ -81,6 +86,18 @@ function circle(cx,cy,r,dir,seg)
   end;
 end;
 
-
+-- scanline, load bitmap data words and raster engrave to end-coordinate at 1 bit-per-pixel
+-- Pass an (x,y) end-coordinate, and a table with (unsigned) 32bit numbers with the data for the scanline
+-- Each data item has 32 bits where the LSB is clocked out FIRST and the MSB LAST
+-- A HIGH bit is LASER ON and a LOW bit is LASER OFF at that location
+function scanline(x,y,data)
+  width = math.ceil(#data * 32);
+  str = "9 1 " .. width;
+  for k,v in ipairs(data) do
+    str = str .. " " .. v;
+  end;
+  print(str);
+  laser(x,y);
+end;
 
 
